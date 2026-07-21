@@ -1,0 +1,18 @@
+{
+  "name": "KTV工资计算器",
+  "short_name": "KTV工资",
+  "description": "KTV服务员每日签到、营业额录入、工资计算",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a16",
+  "theme_color": "#ff3b5c",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%23ff3b5c'/><text x='256' y='300' text-anchor='middle' font-size='200' fill='white'>🎤</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

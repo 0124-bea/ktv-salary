@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KTV工资">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ff3b5c">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiS1RW5bel6LWQ6K6h566X5ZmoIiwic2hvcnRfbmFtZSI6IktUVu+8ngIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwYTBhMTYiLCJ0aGVtZV9jb2xvciI6IiNmZjNiNWMiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMic+PHJlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIHJ4PSc4MCcgZmlsbD0nJTIzZmYzYjVjJy8+PHRleHQgeD0nMjU2JyB5PSczMDAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtc2l6ZT0nMjAwJyBmaWxsPSd3aGl0ZSc+8J+lojwvdGV4dD48L3N2Zz4iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%23ff3b5c'/><text x='256' y='300' text-anchor='middle' font-size='200' fill='white'>🎤</text></svg>">
+<title>KTV工资计算器</title>
+<style>
+:root{--bg:#0a0a16;--card:#141428;--accent:#ff3b5c;--green:#2dd4a8;--gold:#f7c948;--blue:#4a9eff;--purple:#a855f7;--text:#f0f0f0;--muted:#555;--border:#1e1e40;--input:#1a1a36}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;overflow-x:hidden;padding-bottom:80px;padding-bottom:calc(80px + env(safe-area-inset-bottom));-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-overflow-scrolling:touch}
+
+/* === Header === */
+.hdr{background:linear-gradient(135deg,#ff3b5c 0%,#d6284a 50%,#a01e3a 100%);padding:calc(20px + env(safe-area-inset-top)) 16px 16px;text-align:center;position:sticky;top:0;z-index:50}
+.hdr h1{font-size:20px;font-weight:800;letter-spacing:1px}
+.hdr .sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px}
+.tabs{display:flex;gap:0;margin-top:12px;background:rgba(0,0,0,.2);border-radius:12px;padding:3px}
+.tab{flex:1;padding:9px 0;border-radius:10px;border:none;background:transparent;color:rgba(255,255,255,.5);font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.tab.on{background:rgba(255,255,255,.15);color:#fff}
+
+.wrap{max-width:480px;margin:0 auto;padding:12px}
+.page{display:none}.page.active{display:block}
+
+/* === Checkin Page === */
+.today-date{text-align:center;font-size:13px;color:var(--muted);margin:10px 0 6px}
+.today-date b{color:var(--text)}
+
+/* Big checkin button */
+.checkin-wrap{display:flex;justify-content:center;margin:16px 0}
+.checkin-btn{
+  width:160px;height:160px;border-radius:50%;border:none;
+  background:linear-gradient(135deg,var(--green),#1aaa80);
+  color:#fff;font-size:22px;font-weight:900;cursor:pointer;
+  box-shadow:0 8px 30px rgba(45,212,168,.35);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  transition:all .3s;position:relative;overflow:hidden;
+}
+.checkin-btn:active{transform:scale(.95)}
+.checkin-btn .ci-icon{font-size:40px}
+.checkin-btn .ci-txt{font-size:18px}
+.checkin-btn.done{
+  background:linear-gradient(135deg,var(--border),#252550);
+  box-shadow:none;width:auto;height:auto;border-radius:14px;
+  padding:12px 28px;cursor:default;
+}
+.checkin-btn.done .ci-icon{font-size:20px}
+.checkin-btn.done .ci-txt{font-size:13px;color:var(--green)}
+
+/* Punch calendar (补卡) */
+.punch-section{margin-top:16px}
+.punch-section h3{font-size:14px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.pcal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.pc-head{text-align:center;font-size:10px;color:var(--muted);padding:3px 0}
+.pc-day{
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:10px;font-size:12px;cursor:pointer;transition:.15s;
+  border:2px solid transparent;user-select:none;position:relative;
+}
+.pc-day.off{opacity:.2;pointer-events:none}
+.pc-day .pd{font-weight:700;font-size:13px}
+.pc-day .pt{font-size:8px;margin-top:1px;font-weight:600}
+.pc-day.w{background:rgba(45,212,168,.1);border-color:var(--green)}.pc-day.w .pt{color:var(--green)}
+.pc-day.n{background:rgba(74,158,255,.1);border-color:var(--blue)}.pc-day.n .pt{color:var(--blue)}
+.pc-day.l{background:rgba(255,59,92,.1);border-color:var(--accent)}.pc-day.l .pt{color:var(--accent)}
+.pc-day.r{background:rgba(247,201,72,.06);border-color:rgba(247,201,72,.3)}.pc-day.r .pt{color:var(--gold)}
+.pc-day.today{box-shadow:0 0 0 2px var(--text)}
+.pc-day.has-data::after{content:'';position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--green)}
+
+/* Edit panel (slides in from bottom) */
+.edit-panel{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--card);border-radius:20px 20px 0 0;
+  padding:18px 16px 30px;max-height:80vh;overflow-y:auto;
+  box-shadow:0 -8px 40px rgba(0,0,0,.5);
+  animation:slideUp .25s ease;
+}
+.edit-panel.show{display:block}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.edit-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+.edit-overlay.show{display:block}
+
+.ep-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ep-head h3{font-size:16px;font-weight:800}
+.ep-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer}
+
+/* Status pills */
+.status-pills{display:flex;gap:8px;margin-bottom:14px}
+.sp{flex:1;padding:11px 0;border-radius:12px;border:2px solid var(--border);background:transparent;color:var(--text);font-size:13px;font-weight:700;cursor:pointer;text-align:center;transition:.15s}
+.sp.on-g{border-color:var(--green);background:rgba(45,212,168,.1);color:var(--green)}
+.sp.on-r{border-color:var(--accent);background:rgba(255,59,92,.08);color:var(--accent)}
+.sp.on-y{border-color:var(--gold);background:rgba(247,201,72,.08);color:var(--gold)}
+
+/* Input rows */
+.ep-section{margin-top:10px}
+.ep-section-title{font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.er{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.er:last-child{border:none}
+.er .el{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.er .el .eicon{font-size:16px}
+.er input{background:var(--input);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:15px;width:140px;text-align:right;outline:none;transition:.2s}
+.er input:focus{border-color:var(--accent)}
+.er input::placeholder{color:#333}
+
+/* Day summary inside edit panel */
+.ep-sum{margin-top:14px;background:rgba(0,0,0,.2);border-radius:12px;padding:12px;text-align:center}
+.ep-sum .es-l{font-size:11px;color:var(--muted)}
+.ep-sum .es-v{font-size:24px;font-weight:900;color:var(--gold);margin:2px 0}
+.ep-sum .es-d{font-size:10px;color:rgba(255,255,255,.35)}
+
+/* === Summary Page === */
+.total-card{background:linear-gradient(135deg,#1a1a45,#12122e);border-radius:18px;padding:28px;text-align:center;border:1px solid rgba(247,201,72,.15);margin-bottom:12px}
+.total-card .lt{font-size:13px;color:var(--muted)}
+.total-card .tv{font-size:48px;font-weight:900;color:var(--gold);margin:6px 0}
+.total-card .dt{font-size:11px;color:rgba(255,255,255,.35);line-height:1.7}
+
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.si{background:var(--card);border-radius:12px;padding:12px 8px;text-align:center;border:1px solid var(--border)}
+.si .il{font-size:9px;color:var(--muted);margin-bottom:2px}
+.si .iv{font-size:18px;font-weight:800}
+
+.sp-row{background:var(--card);border-radius:14px;padding:4px 16px;margin-bottom:10px;border:1px solid var(--border)}
+.sp-row .sr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.sp-row .sr:last-child{border:none}
+.sp-row .sl{font-size:13px;color:var(--muted)}.sp-row .sv{font-size:14px;font-weight:700}
+.sv.green{color:var(--green)}.sv.gold{color:var(--gold)}.sv.accent{color:var(--accent)}.sv.blue{color:var(--blue)}
+
+.legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:3px}
+
+.mnav{display:flex;align-items:center;justify-content:center;gap:14px;margin:10px 0}
+.mnav button{background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer}
+.mnav span{font-size:14px;font-weight:700;min-width:100px;text-align:center}
+
+.reset-btn{display:block;width:100%;padding:14px;border-radius:12px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:14px;cursor:pointer;margin:12px 0}
+.tip{text-align:center;font-size:10px;color:var(--muted);line-height:1.7;padding:0 10px 20px}
+
+/* === Bottom bar === */
+.sum-bar{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#141430,#101028);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));z-index:50;display:flex;align-items:center;justify-content:space-between}
+.sum-bar .tl{font-size:11px;color:var(--muted)}
+.sum-bar .tv{font-size:26px;font-weight:900;color:var(--gold)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>🎤 KTV工资计算器</h1>
+  <div class="sub">底薪3000（含全勤+夜班补贴）· 提成1.6% · 加班15/h · 回收2/个</div>
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('checkin')">📅 签到</button>
+    <button class="tab" onclick="switchTab('sum')">📊 汇总</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- === CHECKIN PAGE === -->
+  <div class="page active" id="pageCheckin">
+    <div class="today-date">今天是 <b id="todayLabel"></b></div>
+
+    <div class="checkin-wrap" id="checkinWrap">
+      <button class="checkin-btn" id="checkinBtn" onclick="doCheckin()">
+        <span class="ci-icon">👆</span>
+        <span class="ci-txt">签到</span>
+      </button>
+    </div>
+
+    <!-- After checkin: today's entry -->
+    <div id="todayEntry" style="display:none">
+      <div class="ep-section">
+        <div class="ep-section-title">💰 今日录入</div>
+        <div class="er"><span class="el"><span class="eicon">🏪</span>营业额</span><input type="number" id="tRevenue" placeholder="0" oninput="saveToday()"></div>
+        <div class="er"><span class="el"><span class="eicon">♻️</span>回收（个）</span><input type="number" id="tRecycle" placeholder="0" oninput="saveToday()"></div>
+        <div class="er"><span class="el"><span class="eicon">🎁</span>奖励</span><input type="number" id="tReward" placeholder="0" oninput="saveToday()"></div>
+        <div class="er"><span class="el"><span class="eicon">⏰</span>加班（h）</span><input type="number" id="tOT" placeholder="0" step="0.5" oninput="saveToday()"></div>
+        <div class="er"><span class="el"><span class="eicon">🚫</span>罚款</span><input type="number" id="tFine" placeholder="0" oninput="saveToday()"></div>
+        <div class="er"><span class="el"><span class="eicon">📝</span>备注</span><input type="text" id="tNote" placeholder="可选" oninput="saveToday()" style="text-align:left"></div>
+      </div>
+      <div class="ep-sum">
+        <div class="es-l">今日预估收入</div>
+        <div class="es-v" id="todayEarning">¥0</div>
+        <div class="es-d" id="todayEDetail"></div>
+      </div>
+    </div>
+
+    <!-- Calendar for make-up -->
+    <div class="punch-section" id="punchSection">
+      <h3>📅 补卡日历 <span style="font-weight:400;font-size:11px;color:var(--muted)">（点击日期补卡/编辑）</span></h3>
+      <div class="mnav">
+        <button onclick="chgCal(-1)">‹</button>
+        <span id="calLabel"></span>
+        <button onclick="chgCal(1)">›</button>
+      </div>
+      <div class="pcal" id="pCal"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>夜班</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>请假</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>休息</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>有数据</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === SUMMARY PAGE === -->
+  <div class="page" id="pageSum">
+    <div class="mnav">
+      <button onclick="chgSum(-1)">‹</button>
+      <span id="sumLabel"></span>
+      <button onclick="chgSum(1)">›</button>
+    </div>
+
+    <div class="total-card">
+      <div class="lt">本月预计工资</div>
+      <div class="tv" id="sTotal">¥0</div>
+      <div class="dt" id="sDetail"></div>
+    </div>
+
+    <div class="sg">
+      <div class="si"><div class="il">出勤</div><div class="iv" id="xWork" style="color:var(--blue)">0天</div></div>
+      <div class="si"><div class="il">请假</div><div class="iv" id="xLeave" style="color:var(--accent)">0天</div></div>
+      <div class="si"><div class="il">休息</div><div class="iv" id="xRest" style="color:var(--gold)">0天</div></div>
+    </div>
+
+    <div class="sp-row">
+      <div class="sr"><span class="sl">底薪（含全勤+夜班补贴）</span><span class="sv" id="pBase">¥3000</span></div>
+      <div class="sr"><span class="sl">提成（总营业额×1.6%）</span><span class="sv green" id="pComm">¥0</span></div>
+      <div class="sr"><span class="sl">加班费</span><span class="sv" id="pOT">¥0</span></div>
+      <div class="sr"><span class="sl">回收收入</span><span class="sv" id="pRec">¥0</span></div>
+      <div class="sr"><span class="sl">奖励</span><span class="sv green" id="pReward">¥0</span></div>
+      <div class="sr"><span class="sl">罚款</span><span class="sv accent" id="pFine">¥0</span></div>
+      <div class="sr"><span class="sl">请假扣款</span><span class="sv accent" id="pLeaveDeduct">¥0</span></div>
+    </div>
+
+    <button class="reset-btn" onclick="if(confirm('清除所有数据？不可恢复！')){resetAll()}">🗑️ 清除所有数据</button>
+    <div class="tip">💡 底薪3000已含全勤200+夜班补贴200<br>请假第1天扣300（全勤200+100），之后每天扣100<br><br>📱 添加到桌面：浏览器菜单 → 添加到主屏幕<br>数据保存在浏览器本地，卸载浏览器才会丢失</div>
+  </div>
+</div>
+
+<!-- Edit panel overlay -->
+<div class="edit-overlay" id="editOverlay" onclick="closeEdit()"></div>
+<div class="edit-panel" id="editPanel">
+  <div class="ep-head">
+    <h3 id="editTitle">7月1日</h3>
+    <button class="ep-close" onclick="closeEdit()">✕</button>
+  </div>
+  <div class="status-pills" id="editPills">
+    <button class="sp" data-s="work" onclick="editStatus('work')">🌙夜班</button>
+    <button class="sp" data-s="leave" onclick="editStatus('leave')">🔴请假</button>
+    <button class="sp" data-s="rest" onclick="editStatus('rest')">🟡休息</button>
+  </div>
+  <div id="editFields">
+    <div class="ep-section">
+      <div class="ep-section-title">💰 收入录入</div>
+      <div class="er"><span class="el"><span class="eicon">🏪</span>营业额</span><input type="number" id="eRevenue" placeholder="0" oninput="saveEdit()"></div>
+      <div class="er"><span class="el"><span class="eicon">♻️</span>回收（个）</span><input type="number" id="eRecycle" placeholder="0" oninput="saveEdit()"></div>
+      <div class="er"><span class="el"><span class="eicon">🎁</span>奖励</span><input type="number" id="eReward" placeholder="0" oninput="saveEdit()"></div>
+      <div class="er"><span class="el"><span class="eicon">⏰</span>加班（h）</span><input type="number" id="eOT" placeholder="0" step="0.5" oninput="saveEdit()"></div>
+      <div class="er"><span class="el"><span class="eicon">🚫</span>罚款</span><input type="number" id="eFine" placeholder="0" oninput="saveEdit()"></div>
+      <div class="er"><span class="el"><span class="eicon">📝</span>备注</span><input type="text" id="eNote" placeholder="可选" oninput="saveEdit()" style="text-align:left"></div>
+    </div>
+    <div class="ep-sum">
+      <div class="es-l">当日预估收入</div>
+      <div class="es-v" id="editEarning">¥0</div>
+      <div class="es-d" id="editEDetail"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom bar -->
+<div class="sum-bar">
+  <div>
+    <div class="tl">本月预计工资</div>
+    <div class="tv" id="barTotal">¥0</div>
+  </div>
+  <div style="text-align:right">
+    <div class="tl" id="barInfo">出勤0天 · 请假0天</div>
+    <div style="font-size:11px;color:var(--muted)">点击「汇总」看明细</div>
+  </div>
+</div>
+
+<script>
+const BASE=3000,COMM=0.016,OT_R=15,REC_R=2;
+
+let cY,cM,sY,sM,editDay=null;
+// cY/cM = calendar view month, sY/sM = summary view month
+
+function init(){
+  const n=new Date();cY=sY=n.getFullYear();cM=sM=n.getMonth();
+  renderCal();renderSum();checkToday();setTodayLabel();
+}
+
+function key(y,m){return `ktv3_${y}_${m}`}
+function ld(y,m){try{return JSON.parse(localStorage.getItem(key(y,m)))||{}}catch(e){return{}}}
+function sv(y,m,d){localStorage.setItem(key(y,m),JSON.stringify(d))}
+
+function setTodayLabel(){
+  const n=new Date();
+  const wk=['日','一','二','三','四','五','六'][n.getDay()];
+  document.getElementById('todayLabel').textContent=`${n.getMonth()+1}月${n.getDate()}日 周${wk}`;
+}
+
+// === Tab switching ===
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',i===(t==='checkin'?0:1)));
+  document.getElementById('pageCheckin').classList.toggle('active',t==='checkin');
+  document.getElementById('pageSum').classList.toggle('active',t==='sum');
+  if(t==='sum')renderSum();
+}
+
+// === Checkin ===
+function checkToday(){
+  const n=new Date();
+  const data=ld(n.getFullYear(),n.getMonth());
+  const today=n.getDate();
+  const cal=data.cal||{};
+  const btn=document.getElementById('checkinBtn');
+  const entry=document.getElementById('todayEntry');
+
+  if(cal[today]&&cal[today].status==='work'){
+    btn.classList.add('done');
+    btn.innerHTML='<span class="ci-icon">✅</span><span class="ci-txt">已签到</span>';
+    entry.style.display='block';
+    // Load today data
+    const d=cal[today];
+    document.getElementById('tRevenue').value=d.revenue||'';
+    document.getElementById('tRecycle').value=d.recycle||'';
+    document.getElementById('tReward').value=d.reward||'';
+    document.getElementById('tOT').value=d.ot||'';
+    document.getElementById('tFine').value=d.fine||'';
+    document.getElementById('tNote').value=d.note||'';
+    calcTodayEarning(d);
+  }else{
+    btn.classList.remove('done');
+    btn.innerHTML='<span class="ci-icon">👆</span><span class="ci-txt">签到</span>';
+    entry.style.display='none';
+  }
+}
+
+function doCheckin(){
+  const n=new Date();const d=n.getDate();
+  const data=ld(n.getFullYear(),n.getMonth());
+  if(!data.cal)data.cal={};
+  if(!data.cal[d])data.cal[d]={};
+  data.cal[d].status='work';
+  sv(n.getFullYear(),n.getMonth(),data);
+  checkToday();renderCal();calcSum();
+}
+
+function saveToday(){
+  const n=new Date();const d=n.getDate();
+  const data=ld(n.getFullYear(),n.getMonth());
+  if(!data.cal||!data.cal[d])return;
+  const day=data.cal[d];
+  day.revenue=parseFloat(document.getElementById('tRevenue').value)||0;
+  day.recycle=parseFloat(document.getElementById('tRecycle').value)||0;
+  day.reward=parseFloat(document.getElementById('tReward').value)||0;
+  day.ot=parseFloat(document.getElementById('tOT').value)||0;
+  day.fine=parseFloat(document.getElementById('tFine').value)||0;
+  day.note=document.getElementById('tNote').value||'';
+  sv(n.getFullYear(),n.getMonth(),data);
+  calcTodayEarning(day);calcSum();renderCal();
+}
+
+function calcTodayEarning(d){
+  const comm=(d.revenue||0)*COMM;
+  const ot=(d.ot||0)*OT_R;
+  const rec=(d.recycle||0)*REC_R;
+  const rew=d.reward||0;
+  const fine=d.fine||0;
+  const dayTotal=comm+ot+rec+rew-fine;
+  document.getElementById('todayEarning').textContent='¥'+dayTotal.toFixed(0);
+  document.getElementById('todayEDetail').textContent=`提成${comm.toFixed(0)} + 加班${ot} + 回收${rec} + 奖励${rew} - 罚款${fine}`;
+}
+
+// === Calendar ===
+function chgCal(d){cM+=d;if(cM<0){cM=11;cY--}if(cM>11){cM=0;cY++}renderCal()}
+
+function renderCal(){
+  document.getElementById('calLabel').textContent=`${cY}年${cM+1}月`;
+  const g=document.getElementById('pCal');g.innerHTML='';
+  ['日','一','二','三','四','五','六'].forEach(h=>{const e=document.createElement('div');e.className='pc-head';e.textContent=h;g.appendChild(e)});
+
+  const fd=new Date(cY,cM,1).getDay();
+  const dim=new Date(cY,cM+1,0).getDate();
+  const today=new Date();
+  const data=ld(cY,cM);const cal=data.cal||{};
+
+  for(let i=0;i<fd;i++){const e=document.createElement('div');e.className='pc-day off';g.appendChild(e)}
+
+  for(let d=1;d<=dim;d++){
+    const e=document.createElement('div');
+    const fut=(cY>today.getFullYear())||(cY===today.getFullYear()&&cM>today.getMonth())||(cY===today.getFullYear()&&cM===today.getMonth()&&d>today.getDate());
+    let cls='pc-day';if(fut)cls+=' off';
+    const day=cal[d];const s=day&&day.status;
+    if(s==='work')cls+=' w';
+    if(s==='leave')cls+=' l';
+    if(s==='rest')cls+=' r';
+    if(cY===today.getFullYear()&&cM===today.getMonth()&&d===today.getDate())cls+=' today';
+    if(day&&(day.revenue||day.recycle||day.reward||day.ot||day.fine))cls+=' has-data';
+    e.className=cls;
+    const tags={work:'上班',leave:'请假',rest:'休息'};
+    e.innerHTML=`<span class="pd">${d}</span>${s?`<span class="pt">${tags[s]}</span>`:''}`;
+    e.addEventListener('click',(()=>{if(!fut)openEdit(d)}));
+    g.appendChild(e);
+  }
+}
+
+// === Edit Panel ===
+function openEdit(d){
+  editDay=d;
+  const data=ld(cY,cM);const cal=data.cal||{};const day=cal[d]||{};
+  document.getElementById('editTitle').textContent=`${cM+1}月${d}日`;
+  document.getElementById('editOverlay').classList.add('show');
+  document.getElementById('editPanel').classList.add('show');
+
+  // Status pills
+  document.querySelectorAll('#editPills .sp').forEach(b=>{
+    b.className='sp';
+    if(b.dataset.s===day.status){
+      b.classList.add(day.status==='leave'?'on-r':day.status==='rest'?'on-y':'on-g');
+    }
+  });
+
+  const fields=document.getElementById('editFields');
+  if(day.status==='work'){
+    fields.style.display='block';
+    document.getElementById('eRevenue').value=day.revenue||'';
+    document.getElementById('eRecycle').value=day.recycle||'';
+    document.getElementById('eReward').value=day.reward||'';
+    document.getElementById('eOT').value=day.ot||'';
+    document.getElementById('eFine').value=day.fine||'';
+    document.getElementById('eNote').value=day.note||'';
+    calcEditEarning(day);
+  }else{
+    fields.style.display='none';
+  }
+}
+
+function closeEdit(){
+  editDay=null;
+  document.getElementById('editOverlay').classList.remove('show');
+  document.getElementById('editPanel').classList.remove('show');
+  renderCal();calcSum();
+}
+
+function editStatus(s){
+  const data=ld(cY,cM);if(!data.cal)data.cal={};
+  if(!data.cal[editDay])data.cal[editDay]={};
+  const cur=data.cal[editDay].status;
+  data.cal[editDay].status=(cur===s)?'':s;
+  if(!data.cal[editDay].status)delete data.cal[editDay];
+  sv(cY,cM,data);
+
+  // Update pills
+  document.querySelectorAll('#editPills .sp').forEach(b=>{
+    b.className='sp';
+    if(b.dataset.s===s&&data.cal[editDay]&&data.cal[editDay].status===s){
+      b.classList.add(s==='leave'?'on-r':s==='rest'?'on-y':'on-g');
+    }
+  });
+
+  const fields=document.getElementById('editFields');
+  if(s==='work'&&data.cal[editDay]&&data.cal[editDay].status==='work'){
+    fields.style.display='block';
+    const day=data.cal[editDay];
+    document.getElementById('eRevenue').value=day.revenue||'';
+    document.getElementById('eRecycle').value=day.recycle||'';
+    document.getElementById('eReward').value=day.reward||'';
+    document.getElementById('eOT').value=day.ot||'';
+    document.getElementById('eFine').value=day.fine||'';
+    document.getElementById('eNote').value=day.note||'';
+    calcEditEarning(day);
+  }else{
+    fields.style.display='none';
+  }
+  calcSum();
+}
+
+function saveEdit(){
+  if(editDay===null)return;
+  const data=ld(cY,cM);if(!data.cal)data.cal={};
+  if(!data.cal[editDay])data.cal[editDay]={status:'work'};
+  const d=data.cal[editDay];
+  d.revenue=parseFloat(document.getElementById('eRevenue').value)||0;
+  d.recycle=parseFloat(document.getElementById('eRecycle').value)||0;
+  d.reward=parseFloat(document.getElementById('eReward').value)||0;
+  d.ot=parseFloat(document.getElementById('eOT').value)||0;
+  d.fine=parseFloat(document.getElementById('eFine').value)||0;
+  d.note=document.getElementById('eNote').value||'';
+  sv(cY,cM,data);calcEditEarning(d);calcSum();
+}
+
+function calcEditEarning(d){
+  const comm=(d.revenue||0)*COMM;
+  const ot=(d.ot||0)*OT_R;
+  const rec=(d.recycle||0)*REC_R;
+  const rew=d.reward||0;const fine=d.fine||0;
+  const t=comm+ot+rec+rew-fine;
+  document.getElementById('editEarning').textContent='¥'+t.toFixed(0);
+  document.getElementById('editEDetail').textContent=`提成${comm.toFixed(0)} + 加班${ot} + 回收${rec} + 奖励${rew} - 罚款${fine}`;
+}
+
+// === Summary ===
+function chgSum(d){sM+=d;if(sM<0){sM=11;sY--}if(sM>11){sM=0;sY++}renderSum()}
+
+function renderSum(){
+  document.getElementById('sumLabel').textContent=`${sY}年${sM+1}月`;
+  const data=ld(sY,sM);const cal=data.cal||{};
+  const dim=new Date(sY,sM+1,0).getDate();
+  let wD=0,lD=0,rD=0,tOT=0,tRec=0,tRew=0,tFine=0,tRev=0;
+
+  for(let d=1;d<=dim;d++){
+    const day=cal[d];if(!day)continue;
+    const s=day.status;
+    if(s==='work'){wD++;tOT+=day.ot||0;tRec+=day.recycle||0;tRew+=day.reward||0;tFine+=day.fine||0;tRev+=day.revenue||0}
+    if(s==='leave')lD++;
+    if(s==='rest')rD++;
+  }
+
+  const hasLeave=lD>0;
+  const leaveDeduct=hasLeave?(lD===1?300:300+(lD-1)*100):0;
+  const comm=tRev*COMM;
+  const otPay=tOT*OT_R;
+  const recPay=tRec*REC_R;
+  const total=BASE+comm+otPay+recPay+tRew-tFine-leaveDeduct;
+
+  document.getElementById('xWork').textContent=wD+'天';
+  document.getElementById('xLeave').textContent=lD+'天';
+  document.getElementById('xRest').textContent=rD+'天';
+
+  document.getElementById('pBase').textContent='¥'+BASE;
+  document.getElementById('pComm').textContent='¥'+comm.toFixed(0);
+  document.getElementById('pOT').textContent='¥'+otPay.toFixed(0);
+  document.getElementById('pRec').textContent='¥'+recPay.toFixed(0);
+  document.getElementById('pReward').textContent='¥'+tRew;
+  document.getElementById('pFine').textContent='¥'+tFine;
+  document.getElementById('pLeaveDeduct').textContent=leaveDeduct?'-¥'+leaveDeduct:'¥0';
+
+  document.getElementById('sTotal').textContent='¥'+total.toFixed(0);
+  document.getElementById('barTotal').textContent='¥'+total.toFixed(0);
+  document.getElementById('barInfo').textContent=`出勤${wD}天 · 请假${lD}天 · 休息${rD}天`;
+  document.getElementById('sDetail').textContent=
+    `底薪${BASE} + 提成${comm.toFixed(0)} + 加班${otPay} + 回收${recPay} + 奖励${tRew} - 罚款${tFine} - 请假扣${leaveDeduct}`;
+}
+
+function calcSum(){renderSum()}
+
+function resetAll(){
+  localStorage.removeItem(key(sY,sM));
+  if(sY===cY&&sM===cM){renderCal();checkToday()}
+  renderSum();
+}
+
+init();
+// PWA: service worker only works from https, skip for local files
+if(location.protocol==='https:'&&'serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
