@@ -2,22 +2,15 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="KTV工资">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#ff3b5c">
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiS1RW5bel6LWQ6K6h566X5ZmoIiwic2hvcnRfbmFtZSI6IktUVu+8ngIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwYTBhMTYiLCJ0aGVtZV9jb2xvciI6IiNmZjNiNWMiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMic+PHJlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIHJ4PSc4MCcgZmlsbD0nJTIzZmYzYjVjJy8+PHRleHQgeD0nMjU2JyB5PSczMDAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtc2l6ZT0nMjAwJyBmaWxsPSd3aGl0ZSc+8J+lojwvdGV4dD48L3N2Zz4iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%23ff3b5c'/><text x='256' y='300' text-anchor='middle' font-size='200' fill='white'>🎤</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>KTV工资计算器</title>
 <style>
 :root{--bg:#0a0a16;--card:#141428;--accent:#ff3b5c;--green:#2dd4a8;--gold:#f7c948;--blue:#4a9eff;--purple:#a855f7;--text:#f0f0f0;--muted:#555;--border:#1e1e40;--input:#1a1a36}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;overflow-x:hidden;padding-bottom:80px;padding-bottom:calc(80px + env(safe-area-inset-bottom));-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-overflow-scrolling:touch}
+body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:80px}
 
 /* === Header === */
-.hdr{background:linear-gradient(135deg,#ff3b5c 0%,#d6284a 50%,#a01e3a 100%);padding:calc(20px + env(safe-area-inset-top)) 16px 16px;text-align:center;position:sticky;top:0;z-index:50}
+.hdr{background:linear-gradient(135deg,#ff3b5c 0%,#d6284a 50%,#a01e3a 100%);padding:20px 16px 16px;text-align:center;position:sticky;top:0;z-index:50}
 .hdr h1{font-size:20px;font-weight:800;letter-spacing:1px}
 .hdr .sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px}
 .tabs{display:flex;gap:0;margin-top:12px;background:rgba(0,0,0,.2);border-radius:12px;padding:3px}
@@ -142,7 +135,7 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
 .tip{text-align:center;font-size:10px;color:var(--muted);line-height:1.7;padding:0 10px 20px}
 
 /* === Bottom bar === */
-.sum-bar{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#141430,#101028);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));z-index:50;display:flex;align-items:center;justify-content:space-between}
+.sum-bar{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#141430,#101028);border-top:1px solid var(--border);padding:12px 16px;z-index:50;display:flex;align-items:center;justify-content:space-between}
 .sum-bar .tl{font-size:11px;color:var(--muted)}
 .sum-bar .tv{font-size:26px;font-weight:900;color:var(--gold)}
 </style>
@@ -151,7 +144,7 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
 
 <div class="hdr">
   <h1>🎤 KTV工资计算器</h1>
-  <div class="sub">底薪3000（含全勤+夜班补贴）· 提成1.6% · 加班15/h · 回收2/个</div>
+  <div class="sub">底薪3000 · 提成1.6% · 加班15/h · 回收2/个 · 夜班30/天</div>
   <div class="tabs">
     <button class="tab on" onclick="switchTab('checkin')">📅 签到</button>
     <button class="tab" onclick="switchTab('sum')">📊 汇总</button>
@@ -227,17 +220,19 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
     </div>
 
     <div class="sp-row">
-      <div class="sr"><span class="sl">底薪（含全勤+夜班补贴）</span><span class="sv" id="pBase">¥3000</span></div>
+      <div class="sr"><span class="sl">底薪</span><span class="sv" id="pBase">¥2600</span></div>
       <div class="sr"><span class="sl">提成（总营业额×1.6%）</span><span class="sv green" id="pComm">¥0</span></div>
       <div class="sr"><span class="sl">加班费</span><span class="sv" id="pOT">¥0</span></div>
       <div class="sr"><span class="sl">回收收入</span><span class="sv" id="pRec">¥0</span></div>
       <div class="sr"><span class="sl">奖励</span><span class="sv green" id="pReward">¥0</span></div>
       <div class="sr"><span class="sl">罚款</span><span class="sv accent" id="pFine">¥0</span></div>
       <div class="sr"><span class="sl">请假扣款</span><span class="sv accent" id="pLeaveDeduct">¥0</span></div>
+      <div class="sr"><span class="sl">全勤奖（无请假）</span><span class="sv gold" id="pFull">¥0</span></div>
+      <div class="sr"><span class="sl">夜班补贴（上班天×30）</span><span class="sv blue" id="pNight">¥0</span></div>
     </div>
 
     <button class="reset-btn" onclick="if(confirm('清除所有数据？不可恢复！')){resetAll()}">🗑️ 清除所有数据</button>
-    <div class="tip">💡 底薪3000已含全勤200+夜班补贴200<br>请假第1天扣308（全勤200+100+夜班8），之后每天扣108（100+夜班8）<br><br>📱 添加到桌面：浏览器菜单 → 添加到主屏幕<br>数据保存在浏览器本地，卸载浏览器才会丢失</div>
+    <div class="tip">💡 全勤奖200元：当月没有请假自动获得<br>数据保存在浏览器本地，卸载浏览器才会丢失</div>
   </div>
 </div>
 
@@ -284,7 +279,7 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
 </div>
 
 <script>
-const BASE=3000,COMM=0.016,OT_R=15,REC_R=2;
+const BASE=3000,COMM=0.016,OT_R=15,REC_R=2,NIGHT_R=30,FULL=200;
 
 let cY,cM,sY,sM,editDay=null;
 // cY/cM = calendar view month, sY/sM = summary view month
@@ -523,11 +518,13 @@ function renderSum(){
   }
 
   const hasLeave=lD>0;
-  const leaveDeduct=hasLeave?(lD===1?308:308+(lD-1)*108):0;
+  const fullAttend=hasLeave?0:FULL;
+  const leaveDeduct=hasLeave?(lD===1?300:300+(lD-1)*100):0;
+  const nightAllow=wD*NIGHT_R;
   const comm=tRev*COMM;
   const otPay=tOT*OT_R;
   const recPay=tRec*REC_R;
-  const total=BASE+comm+otPay+recPay+tRew-tFine-leaveDeduct;
+  const total=BASE+comm+otPay+recPay+tRew-tFine+fullAttend+nightAllow-leaveDeduct;
 
   document.getElementById('xWork').textContent=wD+'天';
   document.getElementById('xLeave').textContent=lD+'天';
@@ -540,12 +537,14 @@ function renderSum(){
   document.getElementById('pReward').textContent='¥'+tRew;
   document.getElementById('pFine').textContent='¥'+tFine;
   document.getElementById('pLeaveDeduct').textContent=leaveDeduct?'-¥'+leaveDeduct:'¥0';
+  document.getElementById('pFull').textContent=hasLeave?'¥0（有请假）':'¥'+fullAttend;
+  document.getElementById('pNight').textContent='¥'+nightAllow;
 
   document.getElementById('sTotal').textContent='¥'+total.toFixed(0);
   document.getElementById('barTotal').textContent='¥'+total.toFixed(0);
   document.getElementById('barInfo').textContent=`出勤${wD}天 · 请假${lD}天 · 休息${rD}天`;
   document.getElementById('sDetail').textContent=
-    `底薪${BASE} + 提成${comm.toFixed(0)} + 加班${otPay} + 回收${recPay} + 奖励${tRew} - 罚款${tFine} - 请假扣${leaveDeduct}`;
+    `底薪${BASE} + 提成${comm.toFixed(0)} + 加班${otPay} + 回收${recPay} + 奖励${tRew} - 罚款${tFine} - 请假扣${leaveDeduct} + 全勤${fullAttend} + 夜班${nightAllow}`;
 }
 
 function calcSum(){renderSum()}
@@ -557,8 +556,6 @@ function resetAll(){
 }
 
 init();
-// PWA: service worker only works from https, skip for local files
-if(location.protocol==='https:'&&'serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>
 </html>
