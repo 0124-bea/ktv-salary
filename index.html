@@ -151,7 +151,7 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
 
 <div class="hdr">
   <h1>🎤 KTV工资计算器</h1>
-  <div class="sub">底薪3000（含全勤+夜班补贴）· 提成1.6% · 加班15/h · 回收2/个</div>
+  <div class="sub">底薪3000（含全勤+上班补贴）· 提成1.6% · 加班15/h · 回收2/个</div>
   <div class="tabs">
     <button class="tab on" onclick="switchTab('checkin')">📅 签到</button>
     <button class="tab" onclick="switchTab('sum')">📊 汇总</button>
@@ -179,7 +179,7 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
         <div class="er"><span class="el"><span class="eicon">♻️</span>回收（个）</span><input type="number" id="tRecycle" placeholder="0" oninput="saveToday()"></div>
         <div class="er"><span class="el"><span class="eicon">🚫</span>罚款</span><input type="number" id="tFine" placeholder="0" oninput="saveToday()"></div>
         <div class="er"><span class="el"><span class="eicon">🎁</span>奖励</span><input type="number" id="tReward" placeholder="0" oninput="saveToday()"></div>
-        <div class="er"><span class="el"><span class="eicon">📝</span>备注</span><input type="text" id="tNote" placeholder="可选" oninput="saveToday()" style="text-align:left"></div>
+        <div class="er"><span class="el"><span class="eicon">📝</span>招待</span><input type="number" id="tNote" placeholder="0" oninput="saveToday()"></div>
       </div>
       <div class="ep-sum">
         <div class="es-l">今日预估收入</div>
@@ -198,7 +198,7 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
       </div>
       <div class="pcal" id="pCal"></div>
       <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>夜班</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>上班</div>
         <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>请假</div>
         <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>休息</div>
         <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>有数据</div>
@@ -227,17 +227,18 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
     </div>
 
     <div class="sp-row">
-      <div class="sr"><span class="sl">底薪（含全勤+夜班补贴）</span><span class="sv" id="pBase">¥3000</span></div>
+      <div class="sr"><span class="sl">底薪（含全勤+上班补贴）</span><span class="sv" id="pBase">¥3000</span></div>
       <div class="sr"><span class="sl">提成（总营业额×1.6%）</span><span class="sv green" id="pComm">¥0</span></div>
       <div class="sr"><span class="sl">加班费</span><span class="sv" id="pOT">¥0</span></div>
       <div class="sr"><span class="sl">回收收入</span><span class="sv" id="pRec">¥0</span></div>
       <div class="sr"><span class="sl">奖励</span><span class="sv green" id="pReward">¥0</span></div>
       <div class="sr"><span class="sl">罚款</span><span class="sv accent" id="pFine">¥0</span></div>
+      <div class="sr"><span class="sl">招待</span><span class="sv green" id="pNote">¥0</span></div>
       <div class="sr"><span class="sl">请假扣款</span><span class="sv accent" id="pLeaveDeduct">¥0</span></div>
     </div>
 
     <button class="reset-btn" onclick="if(confirm('清除所有数据？不可恢复！')){resetAll()}">🗑️ 清除所有数据</button>
-    <div class="tip">💡 底薪3000已含全勤200+夜班补贴200<br>请假第1天扣308（全勤200+100+夜班8），之后每天扣108（100+夜班8）<br><br>📱 添加到桌面：浏览器菜单 → 添加到主屏幕<br>数据保存在浏览器本地，卸载浏览器才会丢失</div>
+    <div class="tip">💡 底薪3000已含全勤200+上班补贴200<br>请假第1天扣308（全勤200+100+上班8），之后每天扣108（100+上班8）<br><br>📱 添加到桌面：浏览器菜单 → 添加到主屏幕<br>数据保存在浏览器本地，卸载浏览器才会丢失</div>
   </div>
 </div>
 
@@ -249,7 +250,7 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
     <button class="ep-close" onclick="closeEdit()">✕</button>
   </div>
   <div class="status-pills" id="editPills">
-    <button class="sp" data-s="work" onclick="editStatus('work')">🌙夜班</button>
+    <button class="sp" data-s="work" onclick="editStatus('work')">🌙上班</button>
     <button class="sp" data-s="leave" onclick="editStatus('leave')">🔴请假</button>
     <button class="sp" data-s="rest" onclick="editStatus('rest')">🟡休息</button>
   </div>
@@ -261,7 +262,7 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
       <div class="er"><span class="el"><span class="eicon">♻️</span>回收（个）</span><input type="number" id="eRecycle" placeholder="0" oninput="saveEdit()"></div>
       <div class="er"><span class="el"><span class="eicon">🚫</span>罚款</span><input type="number" id="eFine" placeholder="0" oninput="saveEdit()"></div>
       <div class="er"><span class="el"><span class="eicon">🎁</span>奖励</span><input type="number" id="eReward" placeholder="0" oninput="saveEdit()"></div>
-      <div class="er"><span class="el"><span class="eicon">📝</span>备注</span><input type="text" id="eNote" placeholder="可选" oninput="saveEdit()" style="text-align:left"></div>
+      <div class="er"><span class="el"><span class="eicon">📝</span>招待</span><input type="number" id="eNote" placeholder="0" oninput="saveEdit()"></div>
     </div>
     <div class="ep-sum">
       <div class="es-l">当日预估收入</div>
@@ -361,7 +362,7 @@ function saveToday(){
   day.reward=parseFloat(document.getElementById('tReward').value)||0;
   day.ot=parseFloat(document.getElementById('tOT').value)||0;
   day.fine=parseFloat(document.getElementById('tFine').value)||0;
-  day.note=document.getElementById('tNote').value||'';
+  day.note=parseFloat(document.getElementById('tNote').value)||0;
   sv(n.getFullYear(),n.getMonth(),data);
   calcTodayEarning(day);calcSum();renderCal();
 }
@@ -372,9 +373,10 @@ function calcTodayEarning(d){
   const rec=(d.recycle||0)*REC_R;
   const rew=d.reward||0;
   const fine=d.fine||0;
-  const dayTotal=comm+ot+rec+rew-fine;
+  const note=d.note||0;
+  const dayTotal=comm+ot+rec+rew-fine+note;
   document.getElementById('todayEarning').textContent='¥'+dayTotal.toFixed(0);
-  document.getElementById('todayEDetail').textContent=`提成${comm.toFixed(0)} + 加班${ot} + 回收${rec} + 奖励${rew} - 罚款${fine}`;
+  document.getElementById('todayEDetail').textContent=`提成${comm.toFixed(0)} + 加班${ot} + 回收${rec} + 奖励${rew} + 招待${note} - 罚款${fine}`;
 }
 
 // === Calendar ===
@@ -491,7 +493,7 @@ function saveEdit(){
   d.reward=parseFloat(document.getElementById('eReward').value)||0;
   d.ot=parseFloat(document.getElementById('eOT').value)||0;
   d.fine=parseFloat(document.getElementById('eFine').value)||0;
-  d.note=document.getElementById('eNote').value||'';
+  d.note=parseFloat(document.getElementById('eNote').value)||0;
   sv(cY,cM,data);calcEditEarning(d);calcSum();
 }
 
@@ -499,10 +501,10 @@ function calcEditEarning(d){
   const comm=(d.revenue||0)*COMM;
   const ot=(d.ot||0)*OT_R;
   const rec=(d.recycle||0)*REC_R;
-  const rew=d.reward||0;const fine=d.fine||0;
-  const t=comm+ot+rec+rew-fine;
+  const rew=d.reward||0;const fine=d.fine||0;const note=d.note||0;
+  const t=comm+ot+rec+rew-fine+note;
   document.getElementById('editEarning').textContent='¥'+t.toFixed(0);
-  document.getElementById('editEDetail').textContent=`提成${comm.toFixed(0)} + 加班${ot} + 回收${rec} + 奖励${rew} - 罚款${fine}`;
+  document.getElementById('editEDetail').textContent=`提成${comm.toFixed(0)} + 加班${ot} + 回收${rec} + 奖励${rew} + 招待${note} - 罚款${fine}`;
 }
 
 // === Summary ===
@@ -512,12 +514,12 @@ function renderSum(){
   document.getElementById('sumLabel').textContent=`${sY}年${sM+1}月`;
   const data=ld(sY,sM);const cal=data.cal||{};
   const dim=new Date(sY,sM+1,0).getDate();
-  let wD=0,lD=0,rD=0,tOT=0,tRec=0,tRew=0,tFine=0,tRev=0;
+  let wD=0,lD=0,rD=0,tOT=0,tRec=0,tRew=0,tFine=0,tRev=0,tNote=0;
 
   for(let d=1;d<=dim;d++){
     const day=cal[d];if(!day)continue;
     const s=day.status;
-    if(s==='work'){wD++;tOT+=day.ot||0;tRec+=day.recycle||0;tRew+=day.reward||0;tFine+=day.fine||0;tRev+=day.revenue||0}
+    if(s==='work'){wD++;tOT+=day.ot||0;tRec+=day.recycle||0;tRew+=day.reward||0;tFine+=day.fine||0;tRev+=day.revenue||0;tNote+=day.note||0}
     if(s==='leave')lD++;
     if(s==='rest')rD++;
   }
@@ -527,7 +529,7 @@ function renderSum(){
   const comm=tRev*COMM;
   const otPay=tOT*OT_R;
   const recPay=tRec*REC_R;
-  const total=BASE+comm+otPay+recPay+tRew-tFine-leaveDeduct;
+  const total=BASE+comm+otPay+recPay+tRew-tFine-leaveDeduct+tNote;
 
   document.getElementById('xWork').textContent=wD+'天';
   document.getElementById('xLeave').textContent=lD+'天';
@@ -539,13 +541,14 @@ function renderSum(){
   document.getElementById('pRec').textContent='¥'+recPay.toFixed(0);
   document.getElementById('pReward').textContent='¥'+tRew;
   document.getElementById('pFine').textContent='¥'+tFine;
+  document.getElementById('pNote').textContent='¥'+tNote;
   document.getElementById('pLeaveDeduct').textContent=leaveDeduct?'-¥'+leaveDeduct:'¥0';
 
   document.getElementById('sTotal').textContent='¥'+total.toFixed(0);
   document.getElementById('barTotal').textContent='¥'+total.toFixed(0);
   document.getElementById('barInfo').textContent=`出勤${wD}天 · 请假${lD}天 · 休息${rD}天`;
   document.getElementById('sDetail').textContent=
-    `底薪${BASE} + 提成${comm.toFixed(0)} + 加班${otPay} + 回收${recPay} + 奖励${tRew} - 罚款${tFine} - 请假扣${leaveDeduct}`;
+    `底薪${BASE} + 提成${comm.toFixed(0)} + 加班${otPay} + 回收${recPay} + 奖励${tRew} + 招待${tNote} - 罚款${tFine} - 请假扣${leaveDeduct}`;
 }
 
 function calcSum(){renderSum()}
