@@ -225,6 +225,10 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
       <div class="si"><div class="il">请假</div><div class="iv" id="xLeave" style="color:var(--accent)">0天</div></div>
       <div class="si"><div class="il">休息</div><div class="iv" id="xRest" style="color:var(--gold)">0天</div></div>
     </div>
+    <div class="sg">
+      <div class="si"><div class="il">总销售额</div><div class="iv" id="xSales" style="color:var(--green)">¥0</div></div>
+      <div class="si"><div class="il">总加班</div><div class="iv" id="xOT" style="color:var(--warn)">0h</div></div>
+    </div>
 
     <div class="sp-row">
       <div class="sr"><span class="sl">底薪（含全勤+上班补贴）</span><span class="sv" id="pBase">¥3000</span></div>
@@ -534,6 +538,8 @@ function renderSum(){
   document.getElementById('xWork').textContent=wD+'天';
   document.getElementById('xLeave').textContent=lD+'天';
   document.getElementById('xRest').textContent=rD+'天';
+  document.getElementById('xSales').textContent='¥'+tRev.toFixed(0);
+  document.getElementById('xOT').textContent=tOT+'h';
 
   document.getElementById('pBase').textContent='¥'+BASE;
   document.getElementById('pComm').textContent='¥'+comm.toFixed(0);
