@@ -241,6 +241,9 @@ body{font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;backgroun
       <div class="sr"><span class="sl">请假扣款</span><span class="sv accent" id="pLeaveDeduct">¥0</span></div>
     </div>
 
+    <button class="reset-btn" onclick="exportData()" style="border-color:var(--green);color:var(--green)">📤 导出数据</button>
+    <button class="reset-btn" onclick="importData()" style="border-color:var(--blue);color:var(--blue)">📥 导入数据</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
     <button class="reset-btn" onclick="if(confirm('清除所有数据？不可恢复！')){resetAll()}">🗑️ 清除所有数据</button>
     <div class="tip">💡 底薪3000已含全勤200+上班补贴200<br>请假第1天扣308（全勤200+100+上班8），之后每天扣108（100+上班8）<br>招待=正常收入，填多少得多少<br><br>📱 添加到桌面：浏览器菜单 → 添加到主屏幕<br>数据保存在浏览器本地，卸载浏览器才会丢失</div>
   </div>
@@ -559,6 +562,33 @@ function renderSum(){
 
 function calcSum(){renderSum()}
 
+function exportData(){
+  const data={};
+  for(let m=0;m<12;m++){
+    const k=`ktv3_${new Date().getFullYear()}_${m}`;
+    const v=localStorage.getItem(k);
+    if(v)data[k]=v;
+  }
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='ktv-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();URL.revokeObjectURL(url);
+}
+function importData(){document.getElementById('importFile').click();}
+function handleImport(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=JSON.parse(ev.target.result);
+      for(const[k,v]of Object.entries(data))localStorage.setItem(k,v);
+      alert('导入成功！刷新页面生效');
+      location.reload();
+    }catch(err){alert('导入失败：文件格式错误');}
+  };
+  reader.readAsText(file);
+}
 function resetAll(){
   localStorage.removeItem(key(sY,sM));
   if(sY===cY&&sM===cM){renderCal();checkToday()}
